@@ -760,10 +760,15 @@ function calcBuild(){
   var psqftSale=resalePerUnit>0?Math.round(resalePerUnit/sqft):0;
   var totalLandCost=parsM(document.getElementById('lot-total').value);
   var lotPct=totalRev>0?(totalLandCost/totalRev)*100:0;
-  lastBuildCalc={lotPU,sqft,bpsf,resalePerUnit,softPerUnit,sellPct,units,
-    totalRevenue:totalRev,totalCost,totalSellCost:totalSell,totalProfit,profitPerUnit:profitPU,
-    margin,roi,breakEven,buildPerUnit:buildPU,totalCostPerUnit:totalCostPU,
-    psqftSale,lotPct,sellCostPerUnit:sellCPU,totalLandCost,
+  lastBuildCalc={
+    lotPU:lotPU, sqft:sqft, bpsf:bpsf, resalePerUnit:resalePerUnit,
+    softPerUnit:softPerUnit, sellPct:sellPct, units:units,
+    totalRevenue:totalRev, totalCost:totalCost, totalSellCost:totalSell,
+    totalProfit:totalProfit, profitPerUnit:profitPU,
+    margin:margin, roi:roi, breakEven:breakEven,
+    buildPerUnit:buildPU, totalCostPerUnit:totalCostPU,
+    psqftSale:psqftSale, lotPct:lotPct, sellCostPerUnit:sellCPU,
+    totalLandCost:totalLandCost,
     totalAcres:parseFloat(document.getElementById('lot-acres').value)||25,
     acresPerPad:parseFloat(document.getElementById('acres-per-pad').value)||2};
   var mc=marginClass(margin);
@@ -804,24 +809,33 @@ function calcBuild(){
 var lastLandCalc = {};
 
 function calcLand(){
-  var landCost = parsM(document.getElementById('ld-land-cost').value);
-  var totalAcres = parseFloat(document.getElementById('ld-acres').value)||25;
-  var lotSize = parseFloat(document.getElementById('ld-lot-size').value)||2;
-  var hardCosts = parseInt(document.getElementById('ld-hard-costs').value)||0;
-  var softPerLot = parseInt(document.getElementById('ld-soft-costs').value)||10000;
-  var lotPrice = parsM(document.getElementById('ld-lot-price').value);
-  var sellPct = parseFloat(document.getElementById('ld-sell-pct').value)/100;
+  var landCostEl   = document.getElementById('ld-land-cost');
+  var acresEl      = document.getElementById('ld-acres');
+  var lotSizeEl    = document.getElementById('ld-lot-size');
+  var hardEl       = document.getElementById('ld-hard-costs');
+  var softEl       = document.getElementById('ld-soft-costs');
+  var lotPriceEl   = document.getElementById('ld-lot-price');
+  var sellPctEl    = document.getElementById('ld-sell-pct');
+  if(!landCostEl||!acresEl||!lotSizeEl||!hardEl||!softEl||!lotPriceEl||!sellPctEl) return;
+
+  var landCost   = parsM(landCostEl.value);
+  var totalAcres = parseFloat(acresEl.value) || 25;
+  var lotSize    = parseFloat(lotSizeEl.value) || 2;
+  var hardCosts  = parseInt(hardEl.value, 10) || 0;
+  var softPerLot = parseInt(softEl.value, 10) || 10000;
+  var lotPrice   = parsM(lotPriceEl.value);
+  var sellPct    = parseFloat(sellPctEl.value) / 100;
 
   // Badges
   document.getElementById('ld-lotsize-badge').textContent = lotSize.toFixed(2)+' ac / lot';
-  document.getElementById('ld-hard-badge').textContent = hardCosts>=1000000?'$1M':hardCosts>=1000?'$'+Math.round(hardCosts/1000)+'K':'$'+hardCosts.toLocaleString();
+  document.getElementById('ld-hard-badge').textContent = hardCosts >= 1000000 ? '$1M' : hardCosts >= 1000 ? '$'+Math.round(hardCosts/1000)+'K' : '$'+hardCosts.toLocaleString();
   document.getElementById('ld-soft-badge').textContent = '$'+softPerLot.toLocaleString()+'/lot';
-  document.getElementById('ld-sell-badge').textContent = fmtP(parseFloat(document.getElementById('ld-sell-pct').value));
+  document.getElementById('ld-sell-badge').textContent = fmtP(parseFloat(sellPctEl.value));
 
-  // Subdivision
+  // Subdivision math
   var lots = Math.floor(totalAcres / lotSize);
   if(lots < 1) lots = 1;
-  var remainder = Math.round((totalAcres - (lots * lotSize)) * 100) / 100;
+  var remainder  = Math.round((totalAcres - (lots * lotSize)) * 100) / 100;
   var landPerLot = Math.round(landCost / lots);
 
   document.getElementById('ld-bd-lots').textContent = lots;
@@ -829,59 +843,85 @@ function calcLand(){
   document.getElementById('ld-bd-remainder').textContent = remainder.toFixed(2)+' ac';
   var used = lots * lotSize;
   document.getElementById('ld-bd-note').textContent =
-    lots+' lots × '+lotSize.toFixed(2)+' ac = '+used.toFixed(2)+' ac used. '+
+    lots+' lots \u00d7 '+lotSize.toFixed(2)+' ac = '+used.toFixed(2)+' ac used. '+
     (remainder > 0 ? remainder.toFixed(2)+' ac remainder (roads, buffers, easements). ' : '')+
-    'Raw land cost of '+fmt(landCost)+' ÷ '+lots+' lots = '+fmt(landPerLot)+' per lot.';
+    'Raw land cost of '+fmt(landCost)+' \u00f7 '+lots+' lots = '+fmt(landPerLot)+' per lot.';
 
-  // Economics per lot
-  var hardPerLot = lots > 0 ? Math.round(hardCosts / lots) : 0;
+  // Per-lot economics
+  var hardPerLot      = lots > 0 ? Math.round(hardCosts / lots) : 0;
   var totalCostPerLot = landPerLot + hardPerLot + softPerLot;
-  var sellCostPerLot = lotPrice * sellPct;
-  var profitPerLot = lotPrice - totalCostPerLot - sellCostPerLot;
+  var sellCostPerLot  = Math.round(lotPrice * sellPct);
+  var profitPerLot    = lotPrice - totalCostPerLot - sellCostPerLot;
 
   // Project totals
-  var totalRev = lotPrice * lots;
-  var totalHard = hardCosts;
-  var totalSoft = softPerLot * lots;
+  var totalRev       = lotPrice * lots;
+  var totalHard      = hardCosts;
+  var totalSoft      = softPerLot * lots;
   var totalLandAlloc = landCost;
-  var totalSellCost = sellCostPerLot * lots;
-  var totalProfit = profitPerLot * lots;
-  var totalCost = totalCostPerLot * lots;
+  var totalSellCost  = sellCostPerLot * lots;
+  var totalProfit    = profitPerLot * lots;
+  var totalCost      = totalCostPerLot * lots;
 
-  var margin = lotPrice > 0 ? (profitPerLot / lotPrice) * 100 : 0;
-  var roi = totalCostPerLot > 0 ? (profitPerLot / totalCostPerLot) * 100 : 0;
+  var margin   = lotPrice > 0 ? (profitPerLot / lotPrice) * 100 : 0;
+  var roi      = totalCostPerLot > 0 ? (profitPerLot / totalCostPerLot) * 100 : 0;
   var breakEven = totalCostPerLot + sellCostPerLot;
-  var landPct = totalRev > 0 ? (landCost / totalRev) * 100 : 0;
+  var landPct  = totalRev > 0 ? (landCost / totalRev) * 100 : 0;
 
-  lastLandCalc = {landCost,totalAcres,lotSize,hardCosts,softPerLot,lotPrice,sellPct,lots,
-    landPerLot,hardPerLot,totalCostPerLot,sellCostPerLot,profitPerLot,
-    totalRev,totalHard,totalSoft,totalLandAlloc,totalSellCost,totalProfit,totalCost,
-    margin,roi,breakEven,landPct,remainder};
+  lastLandCalc = {
+    landCost:      landCost,
+    totalAcres:    totalAcres,
+    lotSize:       lotSize,
+    hardCosts:     hardCosts,
+    softPerLot:    softPerLot,
+    lotPrice:      lotPrice,
+    sellPct:       sellPct,
+    lots:          lots,
+    landPerLot:    landPerLot,
+    hardPerLot:    hardPerLot,
+    totalCostPerLot: totalCostPerLot,
+    sellCostPerLot: sellCostPerLot,
+    profitPerLot:  profitPerLot,
+    totalRev:      totalRev,
+    totalHard:     totalHard,
+    totalSoft:     totalSoft,
+    totalLandAlloc: totalLandAlloc,
+    totalSellCost: totalSellCost,
+    totalProfit:   totalProfit,
+    totalCost:     totalCost,
+    margin:        margin,
+    roi:           roi,
+    breakEven:     breakEven,
+    landPct:       landPct,
+    remainder:     remainder
+  };
 
   // Viability card
   var mc = marginClass(margin);
-  document.getElementById('ld-margin-pct').textContent = fmtP(margin);
-  document.getElementById('ld-margin-pct').className = 'margin-pct '+mc;
+  document.getElementById('ld-margin-pct').textContent  = fmtP(margin);
+  document.getElementById('ld-margin-pct').className    = 'margin-pct '+mc;
   document.getElementById('ld-margin-badge').textContent = marginLabel(margin);
-  document.getElementById('ld-margin-badge').className = 'margin-badge '+mc;
+  document.getElementById('ld-margin-badge').className   = 'margin-badge '+mc;
 
-  // Per-lot context vs market
+  // Per-lot vs market context
   var medLotPrice = 110000;
   var diff = lotPrice - medLotPrice;
   document.getElementById('ld-lot-ctx').innerHTML =
-    '<div class="psqft-ctx-left"><strong>'+fmt(lotPrice)+'/lot</strong>Your exit price</div>'+
-    '<div class="psqft-ctx-right"><div class="vs">Unionville median: $110,000/lot</div>'+
-    '<div class="delta '+(diff>=0?'above':'below')+'">'+(diff>=0?'+'+fmt(diff):'-'+fmt(Math.abs(diff)))+'</div></div>';
+    '<div class="psqft-ctx-left"><strong>'+fmt(lotPrice)+' / lot</strong>Your exit price</div>'+
+    '<div class="psqft-ctx-right"><div class="vs">Unionville median: $110,000 / lot</div>'+
+    '<div class="delta '+(diff >= 0 ? 'above' : 'below')+'">'+(diff >= 0 ? '+'+fmt(diff) : '\u2212'+fmt(Math.abs(diff)))+'</div></div>';
 
   // Line items
-  document.getElementById('ld-line-items').innerHTML = [
-    {l:'Gross revenue ('+lots+' lots)',v:fmt(totalRev),c:''},
-    {l:'Selling costs',v:'-'+fmt(totalSellCost),c:'neg'},
-    {l:'Raw land cost',v:'-'+fmt(totalLandAlloc),c:'neg'},
-    {l:'Hard dev costs',v:'-'+fmt(totalHard),c:'neg'},
-    {l:'Soft costs',v:'-'+fmt(totalSoft),c:'neg'},
-    {l:'Net profit ('+lots+' lots)',v:(totalProfit>=0?'':'-')+fmt(Math.abs(totalProfit)),c:totalProfit>=0?'pos':'neg',net:true}
-  ].map(function(r){return'<div class="li-row'+(r.net?' net':'')+'"><span class="li-label">'+r.l+'</span><span class="li-val '+r.c+'">'+r.v+'</span></div>';}).join('');
+  var rows = [
+    {l:'Gross revenue ('+lots+' lots)', v:fmt(totalRev),        c:''},
+    {l:'Selling costs',                 v:'\u2212'+fmt(totalSellCost),  c:'neg'},
+    {l:'Raw land cost',                 v:'\u2212'+fmt(totalLandAlloc), c:'neg'},
+    {l:'Hard dev costs',                v:'\u2212'+fmt(totalHard),      c:'neg'},
+    {l:'Soft costs',                    v:'\u2212'+fmt(totalSoft),      c:'neg'},
+    {l:'Net profit ('+lots+' lots)',    v:(totalProfit >= 0 ? '' : '\u2212')+fmt(Math.abs(totalProfit)), c:totalProfit >= 0 ? 'pos' : 'neg', net:true}
+  ];
+  document.getElementById('ld-line-items').innerHTML = rows.map(function(r){
+    return '<div class="li-row'+(r.net ? ' net' : '')+'"><span class="li-label">'+r.l+'</span><span class="li-val '+r.c+'">'+r.v+'</span></div>';
+  }).join('');
 
   // Key metrics
   document.getElementById('ld-key-metrics').innerHTML =
@@ -893,13 +933,13 @@ function calcLand(){
   // Land cost bar
   document.getElementById('ld-lr-pct').textContent = fmtP(landPct);
   var lf = document.getElementById('ld-lr-fill');
-  lf.style.width = Math.min(landPct,100)+'%';
-  lf.style.background = landPct<=20?'#4ade80':landPct<=35?'#fbbf24':'#f87171';
+  lf.style.width      = Math.min(landPct, 100)+'%';
+  lf.style.background = landPct <= 20 ? '#4ade80' : landPct <= 35 ? '#fbbf24' : '#f87171';
   document.getElementById('ld-lr-note').textContent =
     'Raw land cost as % of gross lot revenue. '+
-    (landPct<=20?'Land is well-positioned as a share of revenue.':
-    landPct<=35?'Moderate land ratio — development costs need to stay lean.':
-    'High land ratio — consider negotiating a lower acquisition price.');
+    (landPct <= 20 ? 'Land is well-positioned as a share of revenue.' :
+     landPct <= 35 ? 'Moderate land ratio \u2014 development costs need to stay lean.' :
+                     'High land ratio \u2014 consider negotiating a lower acquisition price.');
 }
 
 // ═══════════════════════════════════
@@ -985,3 +1025,58 @@ function downloadBuildPDF(){
 function downloadLandPDF(){
   var c=lastLandCalc; if(!c.lots){calcLand();c=lastLandCalc;}
   var mc=marginClass(c.margin), mcColor=
+  var mc=marginClass(c.margin), mcColor=mc==='strong'?'#16a34a':mc==='moderate'?'#d97706':'#dc2626';
+  var dateStr=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Land Dev Deal Summary \u00b7 Unionville</title><style>'+pdfStyles()+'</style></head><body>'+
+    '<div class="hdr"><div><div class="hdr-title">Land Development Deal Summary \u00b7 Unionville, TN</div>'+
+    '<div class="hdr-sub">Smith Portfolio \u00b7 Jason Kaczmarski \u00b7 RE/MAX 1st Choice<br>(615) 587-7888 \u00b7 jasonk@realtracs.com<br>Generated '+dateStr+'</div></div>'+
+    '<div class="hdr-badge">Land Dev Pro Forma</div></div>'+
+    '<div class="margin-big"><div style="font-size:48px;font-weight:800;color:'+mcColor+'">'+fmtP(c.margin)+'</div>'+
+    '<div style="font-size:14px;font-weight:600;color:'+mcColor+';margin-top:4px;">'+marginLabel(c.margin)+'</div>'+
+    '<div class="margin-lbl">Estimated profit margin \u00b7 per lot</div></div>'+
+    '<div class="sec"><div class="sec-title">Acquisition &amp; Subdivision</div>'+
+    '<div class="row"><span>Raw land purchase price</span><span>'+fmt(c.landCost)+'</span></div>'+
+    '<div class="row"><span>Total acreage</span><span>'+c.totalAcres+' ac</span></div>'+
+    '<div class="row"><span>Lot size</span><span>'+c.lotSize.toFixed(2)+' ac / lot</span></div>'+
+    '<div class="row"><span>Lots created</span><span>'+c.lots+'</span></div>'+
+    '<div class="row"><span>Remainder acres</span><span>'+c.remainder.toFixed(2)+' ac</span></div>'+
+    '<div class="row"><span>Raw land cost per lot</span><span>'+fmt(c.landPerLot)+'</span></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-title">Development Costs</div>'+
+    '<div class="row"><span>Hard costs (total project)</span><span>'+fmt(c.totalHard)+'</span></div>'+
+    '<div class="row"><span>Hard costs per lot</span><span>'+fmt(c.hardPerLot)+'</span></div>'+
+    '<div class="row"><span>Soft costs per lot</span><span>'+fmt(c.softPerLot)+'</span></div>'+
+    '<div class="row"><span>Total all-in cost per lot</span><span>'+fmt(c.totalCostPerLot)+'</span></div>'+
+    '<div class="row"><span>Target sale price per lot</span><span>'+fmt(c.lotPrice)+'</span></div>'+
+    '<div class="row"><span>Selling cost</span><span>'+fmtP(c.sellPct*100)+'</span></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-title">Financial Summary \u00b7 '+c.lots+' lots</div>'+
+    '<div class="row"><span>Gross revenue</span><span>'+fmt(c.totalRev)+'</span></div>'+
+    '<div class="row"><span>Selling costs</span><span class="neg">\u2212'+fmt(c.totalSellCost)+'</span></div>'+
+    '<div class="row"><span>Raw land cost</span><span class="neg">\u2212'+fmt(c.totalLandAlloc)+'</span></div>'+
+    '<div class="row"><span>Hard dev costs</span><span class="neg">\u2212'+fmt(c.totalHard)+'</span></div>'+
+    '<div class="row"><span>Soft costs</span><span class="neg">\u2212'+fmt(c.totalSoft)+'</span></div>'+
+    '<div class="row tot"><span>Net profit</span><span class="'+(c.totalProfit>=0?'pos':'neg')+'">'+fmt(Math.abs(c.totalProfit))+(c.totalProfit<0?' (loss)':'')+'</span></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-title">Key Metrics</div><div class="grid2">'+
+    '<div class="metric"><div class="metric-val">'+fmtP(c.roi)+'</div><div class="metric-lbl">Return on cost</div></div>'+
+    '<div class="metric"><div class="metric-val">'+fmt(c.breakEven)+'</div><div class="metric-lbl">Break-even / lot</div></div>'+
+    '<div class="metric"><div class="metric-val">'+fmt(c.profitPerLot)+'</div><div class="metric-lbl">Profit per lot</div></div>'+
+    '<div class="metric"><div class="metric-val">'+fmtP(c.landPct)+'</div><div class="metric-lbl">Land cost % of revenue</div></div>'+
+    '</div></div>'+
+    '<div class="foot">All figures are estimates \u2014 not guaranteed. Lot market data is limited (4 closed sales). Consult a licensed appraiser for formal valuation. Not financial, legal, tax, or investment advice.<br>Market data: Realtracs MLS \u00b7 Unionville, TN \u00b7 \u00a9 2026 Realtracs, Inc.<br>Jason Kaczmarski \u00b7 RE/MAX 1st Choice \u00b7 (615) 587-7888 \u00b7 jasonk@realtracs.com</div>'+
+    '</body></html>';
+  var w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();setTimeout(function(){w.print();},600);}
+}
+
+// ===================================
+// BOOT
+// ===================================
+document.addEventListener('DOMContentLoaded', function(){
+  calcLots();
+  calcLand();
+});
+</script>
+</body>
+</html>
