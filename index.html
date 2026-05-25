@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unionville Analyzer · Smith Portfolio · Jason Kaczmarski · RE/MAX 1st Choice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#C0392B;--red-dark:#96281B;--red-light:#fdf2f0;
+  --green:#1a6b3c;--green-light:#e8f5ee;
+  --amber:#B8860B;--amber-light:#fdf8e7;
+  --navy:#1e3a6b;--navy-light:#eef4ff;
+  --bg:#f0efec;--card:#fff;--border:#e2e0db;
+  --text:#1a1a1a;--muted:#6b6860;--surface:#f7f6f3;
+  --dark:#1c1c1c;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.hdr{background:var(--red);}
+.hdr-in{max-width:1040px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.hdr-left{display:flex;align-items:center;gap:11px;}
+.hdr-logo{height:34px;display:block;}
+.hdr-title{font-family:'DM Serif Display',serif;font-size:17px;color:#fff;font-weight:400;line-height:1.2;}
+.hdr-sub{font-size:10px;color:rgba(255,255,255,.65);letter-spacing:.07em;text-transform:uppercase;margin-top:1px;}
+.hdr-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hdr-cta{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);color:#fff;padding:7px 15px;border-radius:6px;font-size:12px;font-weight:500;text-decoration:none;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s;}
+.hdr-cta:hover{background:rgba(255,255,255,.28);}
+.hdr-cta.outline{background:transparent;}
+
+/* TAB NAV */
+.tab-nav{background:var(--dark);border-bottom:3px solid var(--red);}
+.tab-nav-in{max-width:1040px;margin:0 auto;display:flex;gap:0;}
+.tab-btn{padding:14px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,.45);background:transparent;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:3px solid transparent;margin-bottom:-3px;transition:color .15s,border-color .15s;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.tab-btn:hover{color:rgba(255,255,255,.75);}
+.tab-btn.active{color:#fff;border-bottom-color:var(--red);}
+.tab-btn .tab-icon{font-size:15px;}
+
+/* HERO */
+.hero{background:var(--dark);padding:28px 20px 24px;}
+.hero-in{max-width:1040px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.hero-text h1{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;font-weight:400;line-height:1.2;max-width:580px;}
+.hero-text h1 em{color:#e8c97e;font-style:italic;}
+.hero-text p{font-size:13px;color:rgba(255,255,255,.45);margin-top:7px;line-height:1.7;max-width:520px;}
+.hero-badge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:14px 18px;white-space:nowrap;flex-shrink:0;}
+.hero-badge-lbl{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+.hero-badge-val{font-size:22px;font-weight:700;color:#e8c97e;line-height:1;}
+.hero-badge-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:3px;}
+
+/* TAB PANELS */
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* MAIN */
+.main{max-width:1040px;margin:0 auto;padding:20px 20px 60px;}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start;}
+.left-col{display:flex;flex-direction:column;gap:12px;}
+.right-col{position:sticky;top:20px;display:flex;flex-direction:column;gap:12px;}
+
+/* SECTION CARD */
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.sc-head{padding:13px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.sc-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:7px;}
+.sc-body{padding:16px;}
+
+/* MARKET CONTEXT */
+.mkt-section-hdr{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mkt-section-hdr a{font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--red);text-decoration:none;text-transform:none;}
+.mkt-section-hdr a:hover{text-decoration:underline;}
+.mkt-ctx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.mkt-ctx-cell{background:var(--surface);border-radius:7px;padding:10px 12px;text-align:center;}
+.mkt-ctx-val{font-size:17px;font-weight:600;color:var(--red);}
+.mkt-ctx-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.mkt-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:2px;}
+.mkt-table th{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:5px 8px;background:var(--surface);border-bottom:1px solid var(--border);}
+.mkt-table th:not(:first-child){text-align:right;}
+.mkt-table td{padding:7px 8px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
+.mkt-table td:not(:first-child){text-align:right;font-weight:500;}
+.mkt-table tr:last-child td{border-bottom:none;}
+.mkt-table tr.avg-row td{background:var(--surface);font-weight:600;color:var(--text);font-size:11px;}
+.mkt-table tr:hover:not(.avg-row) td{background:#fafaf8;}
+.mkt-table .subdiv{font-size:11px;color:var(--muted);display:block;margin-top:1px;}
+.mkt-section-divider{margin:16px 0;border:none;border-top:1px solid var(--border);}
+
+/* FIELDS */
+.field{margin-bottom:12px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500;}
+.finput{width:100%;border:1px solid var(--border);border-radius:6px;padding:9px 12px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);transition:border-color .15s,background .3s;}
+.finput:focus{outline:none;border-color:#999;}
+.input-prefix{position:relative;display:block;}
+.input-prefix span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
+.input-prefix input{padding-left:22px;}
+.input-suffix-wrap{display:flex;gap:8px;align-items:center;}
+.hint{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.45;}
+
+/* SLIDERS */
+.sl{margin-bottom:14px;}
+.sl:last-child{margin-bottom:0;}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.sl-name{font-size:13px;color:var(--text);}
+.sl-badge{background:var(--dark);color:#fff;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--red);cursor:pointer;}
+.sl-range{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* BUBBLES */
+.bubble{border-radius:6px;padding:8px 12px;font-size:12px;margin-top:8px;line-height:1.55;}
+.bubble.amber{background:#fff8e6;border:1px solid #e8c97e;color:#6b4e00;}
+.bubble.danger{background:var(--red-light);border:1px solid #f5c6c0;color:var(--red-dark);}
+.bubble.navy{background:var(--navy-light);border:1px solid #c5d3f0;color:var(--navy);}
+.bubble.green{background:var(--green-light);border:1px solid #b8ddc9;color:var(--green);}
+
+/* VIABILITY CARD (shared) */
+.viability-card{background:var(--dark);border-radius:10px;padding:20px;border:1px solid #333;}
+.vc-title{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:2px;}
+.vc-sub{font-size:11px;color:rgba(255,255,255,.28);margin-bottom:16px;}
+.margin-box{background:rgba(255,255,255,.06);border-radius:8px;padding:16px;text-align:center;margin-bottom:14px;}
+.margin-label{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.margin-pct{font-size:42px;font-weight:700;line-height:1;margin-bottom:8px;}
+.margin-pct.strong{color:#4ade80;}
+.margin-pct.moderate{color:#fbbf24;}
+.margin-pct.thin,.margin-pct.negative{color:#f87171;}
+.margin-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.margin-badge.strong{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3);}
+.margin-badge.moderate{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.25);}
+.margin-badge.thin,.margin-badge.negative{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.25);}
+.psqft-ctx{background:rgba(255,255,255,.05);border-radius:6px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.psqft-ctx-left{font-size:11px;color:rgba(255,255,255,.4);}
+.psqft-ctx-left strong{color:rgba(255,255,255,.75);display:block;font-size:13px;margin-bottom:1px;}
+.psqft-ctx-right{text-align:right;}
+.psqft-ctx-right .vs{font-size:10px;color:rgba(255,255,255,.32);}
+.psqft-ctx-right .delta{font-size:13px;font-weight:600;}
+.delta.above{color:#4ade80;}
+.delta.below{color:#fbbf24;}
+.line-items{margin-bottom:14px;}
+.li-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;}
+.li-row:last-child{border-bottom:none;}
+.li-label{color:rgba(255,255,255,.55);}
+.li-val{font-weight:500;color:#fff;}
+.li-val.neg{color:#f87171;}
+.li-val.pos{color:#4ade80;}
+.li-row.net .li-label{color:rgba(255,255,255,.8);font-weight:600;font-size:14px;}
+.li-row.net .li-val{font-size:18px;font-weight:700;}
+.key-metrics{background:rgba(255,255,255,.05);border-radius:7px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.km-label{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.km-val{font-size:15px;font-weight:600;color:#fff;}
+.lot-rule{margin-bottom:6px;}
+.lr-top{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;}
+.lr-bar{height:7px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden;}
+.lr-fill{height:100%;border-radius:4px;transition:width .35s;}
+.lr-note{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;line-height:1.5;}
+.pdf-btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;margin-top:14px;}
+.pdf-btn:hover{background:var(--red-dark);}
+.pdf-disclaimer{font-size:10px;color:rgba(255,255,255,.22);margin-top:6px;text-align:center;line-height:1.5;}
+
+/* INSIGHT */
+.insight{background:var(--surface);border-left:3px solid var(--red);border-radius:0 6px 6px 0;padding:10px 13px;font-size:12px;color:var(--muted);line-height:1.65;}
+.insight strong{color:var(--text);}
+
+/* SMITH HUB BANNER */
+.hub-banner{background:var(--navy);border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.hub-banner-text{font-size:12px;color:rgba(255,255,255,.7);line-height:1.5;}
+.hub-banner-text strong{color:#fff;display:block;margin-bottom:1px;}
+.hub-banner-cta{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 13px;border-radius:6px;font-size:11px;font-weight:600;text-decoration:none;white-space:nowrap;transition:background .15s;}
+.hub-banner-cta:hover{background:rgba(255,255,255,.25);}
+
+/* CHART */
+.chart-wrap{position:relative;width:100%;height:200px;margin-top:14px;}
+
+/* LOT BREAKDOWN BOX */
+.lot-breakdown{background:var(--surface);border-radius:8px;padding:12px 14px;border:1px solid var(--border);}
+.lot-breakdown-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;}
+.lb-val{font-size:18px;font-weight:700;color:var(--red);}
+.lb-val.navy{color:var(--navy);}
+.lb-val.muted{color:var(--muted);}
+.lb-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.lb-note{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5;}
+
+/* LAND DEV VIABILITY (Tab 2 right col) */
+.ldev-card{background:var(--dark);border-radius:10px;padding:20px;border:1px solid #333;}
+.ldev-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.ldev-cell{background:rgba(255,255,255,.06);border-radius:7px;padding:11px 12px;text-align:center;}
+.ldev-cell-val{font-size:16px;font-weight:700;color:#fff;line-height:1;}
+.ldev-cell-lbl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.04em;text-transform:uppercase;}
+
+/* FOOTER */
+.footer{background:var(--dark);border-top:3px solid var(--red);padding:32px 20px;}
+.footer-in{max-width:1040px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.footer-logo{height:32px;margin-bottom:8px;display:block;}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.32);line-height:1.7;max-width:260px;}
+.footer-right h3{font-family:'DM Serif Display',serif;font-size:17px;color:#fff;font-weight:400;margin-bottom:5px;}
+.footer-right p{font-size:12px;color:rgba(255,255,255,.42);margin-bottom:11px;}
+.footer-cta{display:inline-block;background:var(--red);color:#fff;padding:10px 18px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.footer-cta:hover{background:var(--red-dark);}
+.footer-bottom{max-width:1040px;margin:20px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:rgba(255,255,255,.22);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+
+@media(max-width:720px){
+  .layout{grid-template-columns:1fr;}
+  .right-col{position:static;}
+  .hero-text h1{font-size:22px;}
+  .mkt-ctx-grid{grid-template-columns:1fr 1fr;}
+  .key-metrics,.ldev-summary-grid{grid-template-columns:1fr 1fr;}
+  .hero-in{flex-direction:column;}
+  .mkt-table{font-size:11px;}
+  .tab-btn{padding:12px 14px;font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="hdr-left">
+      <img class="hdr-logo" src="https://kvcore-library.s3.amazonaws.com/remax1stchoice8207/images/03b9616f75a8e185d56a93c799829fdf.png" alt="RE/MAX 1st Choice" onerror="this.style.display='none'">
+      <div>
+        <div class="hdr-title">Unionville Analyzer</div>
+        <div class="hdr-sub">Smith Portfolio · Jason Kaczmarski · RE/MAX 1st Choice · (615) 587-7888</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <a class="hdr-cta outline" href="https://jasonknashville.github.io/Smith-Hub/" target="_blank" rel="noopener">← Smith Hub</a>
+      <a class="hdr-cta" href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/ask/9539cc58d5c28bd9c77d6755120798e0" target="_blank" rel="noopener">Talk to Jason →</a>
+    </div>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <div class="tab-nav-in">
+    <button class="tab-btn active" onclick="switchTab('build',this)">
+      <span class="tab-icon">🔨</span> New Build Pro Forma
+    </button>
+    <button class="tab-btn" onclick="switchTab('land',this)">
+      <span class="tab-icon">🌾</span> Land Development Pro Forma
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 1: NEW BUILD PRO FORMA                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="tab-build" class="tab-panel active">
+
+  <div class="hero">
+    <div class="hero-in">
+      <div class="hero-text">
+        <h1>Unionville, TN <em>New Build</em> Pro Forma</h1>
+        <p>Enter your land and build parameters — get your margin, break-even, and deal summary instantly. Backed by active Realtracs market data for Unionville new construction.</p>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-lbl">Market median $/sqft</div>
+        <div class="hero-badge-val">$252/sf</div>
+        <div class="hero-badge-sub">Unionville new builds · 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="layout">
+      <div class="left-col">
+
+        <!-- MARKET: LAND -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">🌾 Market Context — Land</div></div>
+          <div class="sc-body">
+            <div class="mkt-section-hdr">
+              Land Sales · Unionville, TN · 2022–2026
+              <div style="display:flex;gap:8px;">
+                <a href="https://go.realtracs.com/1i5hv3x" target="_blank" rel="noopener">CMA Report ↗</a>
+                <a href="https://go.realtracs.com/1i5hu9A" target="_blank" rel="noopener" style="color:var(--navy);">Active Listings ↗</a>
+              </div>
+            </div>
+            <div class="mkt-ctx-grid">
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">$12,000</div><div class="mkt-ctx-lbl">Median $/acre</div></div>
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">16.3 ac</div><div class="mkt-ctx-lbl">Median lot size</div></div>
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">4 days</div><div class="mkt-ctx-lbl">Median DOM</div></div>
+            </div>
+            <table class="mkt-table">
+              <thead><tr><th>Address / Subdivision</th><th>Acres</th><th>$/Acre</th><th>Sale Price</th><th>DOM</th></tr></thead>
+              <tbody>
+                <tr><td>1166 Halls Mill Rd<span class="subdiv">None</span></td><td>22.1</td><td>$18,132</td><td>$400,002</td><td>1</td></tr>
+                <tr><td>1731 Halls Mill Rd<span class="subdiv">None</span></td><td>34.3</td><td>$13,104</td><td>$450,000</td><td>6</td></tr>
+                <tr><td>6 Halls Mill Rd<span class="subdiv">None</span></td><td>30.6</td><td>$15,970</td><td>$489,000</td><td>79</td></tr>
+                <tr><td>1015L Buzzard Roost Rd<span class="subdiv">Badlands Subdivision</span></td><td>15.0</td><td>$19,987</td><td>$300,000</td><td>7</td></tr>
+                <tr><td>0 Zion Hill Rd<span class="subdiv">n/a</span></td><td>22.5</td><td>$9,791</td><td>$220,000</td><td>99</td></tr>
+                <tr><td>0 Hopkins Bridge Rd<span class="subdiv">n/a</span></td><td>12.1</td><td>$9,091</td><td>$110,000</td><td>6</td></tr>
+                <tr><td>3 Old Columbia Rd Lot 3<span class="subdiv">None</span></td><td>14.8</td><td>$18,268</td><td>$270,000</td><td>160</td></tr>
+                <tr><td>Sub Station Rd (Lots 1–5)<span class="subdiv">n/a · avg of 5</span></td><td>13.8</td><td>$11,540</td><td>$147,910</td><td>0</td></tr>
+                <tr class="avg-row"><td>Average (all closed)</td><td>23.0 ac</td><td>$12,498</td><td>$257,916</td><td>52</td></tr>
+                <tr class="avg-row"><td>Median (all closed)</td><td>16.3 ac</td><td>$12,000</td><td>$212,480</td><td>4</td></tr>
+              </tbody>
+            </table>
+            <hr class="mkt-section-divider">
+
+            <!-- MARKET: NEW BUILDS -->
+            <div class="mkt-section-hdr">
+              New Build Resales · Unionville, TN · 2025–2026
+              <div style="display:flex;gap:8px;">
+                <a href="https://go.realtracs.com/1i5hxEN" target="_blank" rel="noopener">CMA Report ↗</a>
+                <a href="https://go.realtracs.com/1i5i218" target="_blank" rel="noopener" style="color:var(--navy);">Active Listings ↗</a>
+              </div>
+            </div>
+            <div class="mkt-ctx-grid">
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">$252/sf</div><div class="mkt-ctx-lbl">Median $/sqft</div></div>
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">$524,900</div><div class="mkt-ctx-lbl">Median sale price</div></div>
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">16 days</div><div class="mkt-ctx-lbl">Median DOM</div></div>
+            </div>
+            <table class="mkt-table">
+              <thead><tr><th>Address / Subdivision</th><th>Sqft</th><th>Acres</th><th>$/Sqft</th><th>Sale Price</th><th>DOM</th></tr></thead>
+              <tbody>
+                <tr><td>128 Deer Point Rd<span class="subdiv">Deer Point Subd</span></td><td>1,521</td><td>0.87</td><td>$247</td><td>$375,000</td><td>16</td></tr>
+                <tr><td>2119 Halls Mill Rd Lot 4<span class="subdiv">Halls Mill</span></td><td>1,700</td><td>2.29</td><td>$265</td><td>$449,900</td><td>12</td></tr>
+                <tr><td>2121 Halls Mill Rd Lot 3<span class="subdiv">Halls Mill Rd</span></td><td>1,750</td><td>2.44</td><td>$280</td><td>$489,900</td><td>30</td></tr>
+                <tr><td>2123 Halls Mill Rd Lot 2<span class="subdiv">Halls Mill Rd</span></td><td>1,750</td><td>2.56</td><td>$280</td><td>$489,900</td><td>0</td></tr>
+                <tr><td>2125 Halls Mill Rd Lot 1<span class="subdiv">Halls Mill Rd</span></td><td>1,750</td><td>2.01</td><td>$274</td><td>$480,000</td><td>19</td></tr>
+                <tr><td>219 Unionville Chapel Hill Rd<span class="subdiv">Lot 1</span></td><td>2,100</td><td>1.95</td><td>$250</td><td>$524,900</td><td>53</td></tr>
+                <tr><td>215 Unionville Chapel Hill Rd<span class="subdiv">Lot 3</span></td><td>2,050</td><td>1.85</td><td>$256</td><td>$524,900</td><td>40</td></tr>
+                <tr><td>217 Unionville Chapel Hill Rd<span class="subdiv">Lot 2</span></td><td>2,500</td><td>1.70</td><td>$228</td><td>$569,900</td><td>61</td></tr>
+                <tr><td>120 Pugh Rd Lot 1<span class="subdiv">Shenandoah</span></td><td>2,276</td><td>4.39</td><td>$253</td><td>$574,900</td><td>29</td></tr>
+                <tr><td>112 Pugh Rd Lot 5<span class="subdiv">Shenandoah</span></td><td>2,428</td><td>2.43</td><td>$231</td><td>$560,000</td><td>0</td></tr>
+                <tr><td>128 Pugh Rd Lot 2<span class="subdiv">Shenandoah</span></td><td>2,339</td><td>3.73</td><td>$252</td><td>$589,900</td><td>1</td></tr>
+                <tr><td>134 Pugh Rd Lot 3<span class="subdiv">Shenandoah</span></td><td>2,375</td><td>3.13</td><td>$248</td><td>$589,900</td><td>11</td></tr>
+                <tr><td>371 Honeybee Dr Lot 14<span class="subdiv">Northside Subdivision</span></td><td>2,749</td><td>1.44</td><td>$224</td><td>$615,000</td><td>9</td></tr>
+                <tr class="avg-row"><td>Average (13 closed)</td><td>2,099 sf</td><td>2.37 ac</td><td>$253</td><td>$525,700</td><td>22</td></tr>
+                <tr class="avg-row"><td>Median (13 closed)</td><td>2,100 sf</td><td>2.29 ac</td><td>$252</td><td>$524,900</td><td>16</td></tr>
+              </tbody>
+            </table>
+            <div class="chart-wrap"><canvas id="buildChart"></canvas></div>
+            <div class="insight" style="margin-top:14px;">
+              <strong>Unionville, TN · New Construction Overview.</strong> Thirteen closed new builds in 2025–2026 show a tight median $/sqft of $252 with consistent demand — median DOM of just 16 days. Homes range from 1,521–2,749 sqft on lots of 0.87–4.39 acres, with sale prices spanning $375K–$615K. Land trades between $9,000–$20,000/acre with a $12,000 median. The Halls Mill and Pugh Rd corridors anchor the bulk of recent activity.
+            </div>
+          </div>
+        </div>
+
+        <!-- PROPERTY ACQUISITION -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">🏡 Property Acquisition</div></div>
+          <div class="sc-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+              <div class="field" style="margin-bottom:0">
+                <label>Total land cost</label>
+                <div class="input-prefix"><span>$</span><input class="finput" type="text" id="lot-total" value="300,000" oninput="fmtM(this);calcLots()"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Total acreage</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input class="finput" type="number" id="lot-acres" value="25" min="1" max="500" step="0.5" oninput="calcLots()" style="width:100%;">
+                  <span style="font-size:12px;color:var(--muted);white-space:nowrap">ac</span>
+                </div>
+              </div>
+            </div>
+            <div class="sl" style="margin-bottom:10px;">
+              <div class="sl-top"><span class="sl-name">Acres per build pad</span><span class="sl-badge" id="acp-badge">2.0 ac</span></div>
+              <input type="range" id="acres-per-pad" min="0.5" max="10" step="0.5" value="2" oninput="calcLots()">
+              <div class="sl-range"><span>0.5 ac</span><span style="color:var(--muted)">Unionville median: 2.29 ac</span><span>10 ac</span></div>
+            </div>
+            <div class="lot-breakdown" id="lot-breakdown">
+              <div class="lot-breakdown-grid">
+                <div><div class="lb-val" id="bd-lots">12</div><div class="lb-lbl">Buildable lots</div></div>
+                <div><div class="lb-val navy" id="bd-cost-per">$25,000</div><div class="lb-lbl">Land cost / lot</div></div>
+                <div><div class="lb-val muted" id="bd-unused">1.0 ac</div><div class="lb-lbl">Remainder acres</div></div>
+              </div>
+              <div class="lb-note" id="bd-note"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONSTRUCTION & RESALE -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">🔨 Construction &amp; Resale</div><div style="font-size:11px;color:var(--muted)">per unit</div></div>
+          <div class="sc-body">
+            <div class="sl">
+              <div class="sl-top"><span class="sl-name">Planned size (sq ft)</span><span class="sl-badge" id="sqft-badge">2,100 sf</span></div>
+              <input type="range" id="sqft" min="1000" max="3500" step="50" value="2100" oninput="syncResaleOnSqftChange();calcBuild()">
+              <div class="sl-range"><span>1,000 sf</span><span style="color:var(--muted)">Unionville median: 2,100 sf</span><span>3,500 sf</span></div>
+              <div id="sqft-bubble" style="display:none" class="bubble amber">Above 3,000 sqft approaches custom build territory — costs vary widely. Contact Jason or a licensed builder for specifics.</div>
+            </div>
+            <div class="sl">
+              <div class="sl-top"><span class="sl-name">Build cost ($/sf)</span><span class="sl-badge" id="bpsf-badge">$175/sf</span></div>
+              <input type="range" id="bpsf" min="150" max="300" step="5" value="175" oninput="calcBuild()">
+              <div class="sl-range"><span>$150/sf</span><span style="color:var(--muted)">Def: $175</span><span>$300/sf</span></div>
+              <div id="bpsf-bubble" style="display:none" class="bubble danger">Above $250/sf approaches custom build territory. Contact Jason or a licensed builder/contractor for more specific details.</div>
+            </div>
+            <div class="field">
+              <label>Projected resale price per unit</label>
+              <div class="input-suffix-wrap">
+                <div class="input-prefix" style="flex:1"><span>$</span><input class="finput" type="text" id="resale" value="524,900" oninput="resaleChanged('total');calcBuild()"></div>
+                <div style="color:var(--muted);font-size:11px;font-weight:500;">@</div>
+                <div style="display:flex;align-items:center;gap:4px;width:110px;">
+                  <span style="font-size:12px;color:var(--muted)">$</span>
+                  <input class="finput" type="text" id="resale-psf" value="250" oninput="resaleChanged('psf');calcBuild()" style="width:65px;padding:9px 8px;">
+                  <span style="font-size:11px;color:var(--muted);white-space:nowrap">/sf</span>
+                </div>
+              </div>
+              <div class="hint">Total price and $/sqft stay in sync. Unionville median: $524,900 / $252/sf.</div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Additional soft costs per unit <span style="font-weight:400;color:var(--muted)">(holding, permits, insurance, contingency)</span></label>
+              <div class="input-prefix"><span>$</span><input class="finput" type="text" id="softcosts" value="15,000" oninput="fmtM(this);calcBuild()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SELLING COSTS -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">📊 Selling Costs</div></div>
+          <div class="sc-body">
+            <div class="sl" style="margin-bottom:0">
+              <div class="sl-top"><span class="sl-name">Selling cost % of sale price</span><span class="sl-badge" id="sell-badge">7.5%</span></div>
+              <input type="range" id="sell" min="2" max="10" step="0.5" value="7.5" oninput="calcBuild()">
+              <div class="sl-range"><span>2%</span><span>10%</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /left-col -->
+
+      <div class="right-col">
+        <div class="hub-banner">
+          <div class="hub-banner-text"><strong>Smith Portfolio Hub</strong>Full market overview, tools &amp; resources</div>
+          <a class="hub-banner-cta" href="https://jasonknashville.github.io/Smith-Hub/" target="_blank" rel="noopener">Open Hub →</a>
+        </div>
+        <div class="viability-card">
+          <div class="vc-title">New Build Viability</div>
+          <div class="vc-sub">Estimated financial performance · Unionville</div>
+          <div class="margin-box">
+            <div class="margin-label">Estimated profit margin</div>
+            <div class="margin-pct" id="b-margin-pct">—</div>
+            <div class="margin-badge" id="b-margin-badge">—</div>
+          </div>
+          <div class="psqft-ctx" id="b-psqft-ctx"></div>
+          <div class="line-items" id="b-line-items"></div>
+          <div class="key-metrics" id="b-key-metrics"></div>
+          <div class="lot-rule">
+            <div class="lr-top"><span>Land cost as % of gross revenue</span><span id="b-lr-pct">—</span></div>
+            <div class="lr-bar"><div class="lr-fill" id="b-lr-fill"></div></div>
+            <div class="lr-note" id="b-lr-note"></div>
+          </div>
+          <button class="pdf-btn" onclick="downloadBuildPDF()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF Deal Summary
+          </button>
+          <div class="pdf-disclaimer">This tool does not promise zoning approval, construction pricing, financing, permits, or final resale value.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-build -->
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB 2: LAND DEVELOPMENT PRO FORMA                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="tab-land" class="tab-panel">
+
+  <div class="hero">
+    <div class="hero-in">
+      <div class="hero-text">
+        <h1>Unionville, TN <em>Land Development</em> Pro Forma</h1>
+        <p>Model a raw land acquisition, subdivision, and shovel-ready lot sale. Enter your land cost, development costs, and target sale price per lot to see your margin and return.</p>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-lbl">Shovel-ready lot median</div>
+        <div class="hero-badge-val">$110K</div>
+        <div class="hero-badge-sub">Unionville lots under 2.5 ac · 2024–2026</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="layout">
+      <div class="left-col">
+
+        <!-- MARKET: SHOVEL-READY LOTS -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">📋 Market Context — Shovel-Ready Lots</div></div>
+          <div class="sc-body">
+            <div class="mkt-section-hdr">
+              Lots Under 2.5 Acres · Unionville, TN · 2024–2026
+            </div>
+            <div class="mkt-ctx-grid">
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">$110K</div><div class="mkt-ctx-lbl">Median sale price</div></div>
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">2.0 ac</div><div class="mkt-ctx-lbl">Median lot size</div></div>
+              <div class="mkt-ctx-cell"><div class="mkt-ctx-val">42 days</div><div class="mkt-ctx-lbl">Median DOM</div></div>
+            </div>
+            <table class="mkt-table">
+              <thead><tr><th>Address / Subdivision</th><th>Acres</th><th>List Price</th><th>Sale Price</th><th>$/Acre</th><th>DOM</th></tr></thead>
+              <tbody>
+                <tr><td>358 Coopertown Rd<span class="subdiv">N/A</span></td><td>2.40</td><td>$139,900</td><td>$120,000</td><td>$50,000</td><td>2</td></tr>
+                <tr><td>415 Thompson Rd<span class="subdiv">2.28 Ac Unrestricted Lot</span></td><td>2.28</td><td>$149,000</td><td>$140,000</td><td>$61,404</td><td>0</td></tr>
+                <tr><td>0 Halls Mill Rd<span class="subdiv">Sequoia Subdivision</span></td><td>1.76</td><td>$150,000</td><td>$100,000</td><td>$56,818</td><td>82</td></tr>
+                <tr><td>0 Pugh Rd<span class="subdiv">Sequoia Subdivision</span></td><td>1.32</td><td>$150,000</td><td>$100,000</td><td>$75,758</td><td>82</td></tr>
+                <tr class="avg-row"><td>Average (4 closed)</td><td>1.94 ac</td><td>$147,225</td><td>$115,000</td><td>$60,995</td><td>42</td></tr>
+                <tr class="avg-row"><td>Median (4 closed)</td><td>2.02 ac</td><td>$149,500</td><td>$110,000</td><td>$59,111</td><td>42</td></tr>
+              </tbody>
+            </table>
+            <div class="insight" style="margin-top:14px;">
+              <strong>Unionville, TN · Shovel-Ready Lot Market.</strong> Only four closed sales of lots under 2.5 acres since 2024 — a thin but informative data set. Median sale price is $110,000 at a median size of 2.02 acres ($59,111/acre). Two Sequoia Subdivision lots closed April 2026 at $100K each after 82 DOM, suggesting list-to-sale discounting is common. Unrestricted lots (Coopertown Rd, Thompson Rd) traded at a premium. Demand exists but this is a developing market — pricing shovel-ready lots conservatively is advisable.
+            </div>
+          </div>
+        </div>
+
+        <!-- LAND ACQUISITION -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">🌾 Land Acquisition</div></div>
+          <div class="sc-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="field" style="margin-bottom:0">
+                <label>Raw land purchase price</label>
+                <div class="input-prefix"><span>$</span><input class="finput" type="text" id="ld-land-cost" value="300,000" oninput="fmtM(this);calcLand()"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Total acreage</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input class="finput" type="number" id="ld-acres" value="25" min="1" max="500" step="0.5" oninput="calcLand()" style="width:100%;">
+                  <span style="font-size:12px;color:var(--muted);white-space:nowrap">ac</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBDIVISION & LOT SIZE -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">📐 Subdivision Plan</div></div>
+          <div class="sc-body">
+            <div class="sl">
+              <div class="sl-top"><span class="sl-name">Subdivided lot size</span><span class="sl-badge" id="ld-lotsize-badge">2.0 ac / lot</span></div>
+              <input type="range" id="ld-lot-size" min="0.5" max="3" step="0.25" value="2" oninput="calcLand()">
+              <div class="sl-range"><span>0.5 ac</span><span style="color:var(--muted)">Market median: 2.02 ac</span><span>3.0 ac</span></div>
+            </div>
+
+            <!-- LOT BREAKDOWN -->
+            <div class="lot-breakdown">
+              <div class="lot-breakdown-grid">
+                <div><div class="lb-val" id="ld-bd-lots">12</div><div class="lb-lbl">Lots created</div></div>
+                <div><div class="lb-val navy" id="ld-bd-land-per">$25,000</div><div class="lb-lbl">Raw land / lot</div></div>
+                <div><div class="lb-val muted" id="ld-bd-remainder">1.0 ac</div><div class="lb-lbl">Remainder acres</div></div>
+              </div>
+              <div class="lb-note" id="ld-bd-note"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEVELOPMENT COSTS -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">⚙️ Development Costs</div></div>
+          <div class="sc-body">
+            <div class="sl">
+              <div class="sl-top"><span class="sl-name">Hard costs — total project <span style="font-weight:400;font-size:11px;color:var(--muted)">(utilities, survey, perc tests, road, grading)</span></span><span class="sl-badge" id="ld-hard-badge">$0</span></div>
+              <input type="range" id="ld-hard-costs" min="0" max="1000000" step="5000" value="0" oninput="calcLand()">
+              <div class="sl-range"><span>$0</span><span style="color:var(--muted)">Total for all lots</span><span>$1M</span></div>
+            </div>
+            <div class="sl" style="margin-bottom:0">
+              <div class="sl-top"><span class="sl-name">Soft costs — per lot <span style="font-weight:400;font-size:11px;color:var(--muted)">(insurance, holding, closing costs)</span></span><span class="sl-badge" id="ld-soft-badge">$10,000/lot</span></div>
+              <input type="range" id="ld-soft-costs" min="0" max="50000" step="500" value="10000" oninput="calcLand()">
+              <div class="sl-range"><span>$0</span><span style="color:var(--muted)">Default: $10K/lot</span><span>$50K/lot</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SELLING -->
+        <div class="sc">
+          <div class="sc-head"><div class="sc-title">💰 Lot Sale Price &amp; Selling Costs</div></div>
+          <div class="sc-body">
+            <div class="field">
+              <label>Target sale price per lot</label>
+              <div class="input-prefix"><span>$</span><input class="finput" type="text" id="ld-lot-price" value="110,000" oninput="fmtM(this);calcLand()"></div>
+              <div class="hint">Unionville median shovel-ready lot: $110,000. Adjust for your specific lot size and location.</div>
+            </div>
+            <div class="sl" style="margin-bottom:0">
+              <div class="sl-top"><span class="sl-name">Selling cost % of sale price</span><span class="sl-badge" id="ld-sell-badge">6.0%</span></div>
+              <input type="range" id="ld-sell-pct" min="2" max="10" step="0.5" value="6" oninput="calcLand()">
+              <div class="sl-range"><span>2%</span><span>10%</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /left-col -->
+
+      <div class="right-col">
+        <div class="hub-banner">
+          <div class="hub-banner-text"><strong>Smith Portfolio Hub</strong>Full market overview, tools &amp; resources</div>
+          <a class="hub-banner-cta" href="https://jasonknashville.github.io/Smith-Hub/" target="_blank" rel="noopener">Open Hub →</a>
+        </div>
+
+        <div class="ldev-card">
+          <div class="vc-title">Land Development Viability</div>
+          <div class="vc-sub">Shovel-ready lot exit · Unionville, TN</div>
+
+          <div class="margin-box">
+            <div class="margin-label">Estimated profit margin</div>
+            <div class="margin-pct" id="ld-margin-pct">—</div>
+            <div class="margin-badge" id="ld-margin-badge">—</div>
+          </div>
+
+          <!-- Per-lot context -->
+          <div class="psqft-ctx" id="ld-lot-ctx"></div>
+
+          <!-- Line items -->
+          <div class="line-items" id="ld-line-items"></div>
+
+          <!-- Key metrics grid -->
+          <div class="ldev-summary-grid" id="ld-key-metrics"></div>
+
+          <!-- Land cost bar -->
+          <div class="lot-rule" style="margin-top:14px;">
+            <div class="lr-top"><span>Land cost as % of gross revenue</span><span id="ld-lr-pct">—</span></div>
+            <div class="lr-bar"><div class="lr-fill" id="ld-lr-fill"></div></div>
+            <div class="lr-note" id="ld-lr-note"></div>
+          </div>
+
+          <button class="pdf-btn" onclick="downloadLandPDF()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF Deal Summary
+          </button>
+          <div class="pdf-disclaimer">Estimates only. Not financial, legal, or investment advice. Lot market data is limited — consult a licensed appraiser for formal valuation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-land -->
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-in">
+    <div>
+      <img class="footer-logo" src="https://kvcore-library.s3.amazonaws.com/remax1stchoice8207/images/03b9616f75a8e185d56a93c799829fdf.png" alt="RE/MAX 1st Choice" onerror="this.style.display='none'">
+      <p class="footer-copy">Unionville market data sourced from Realtracs MLS. All projections are estimates and not guaranteed. Not financial, tax, or investment advice. © 2026 Realtracs, Inc.</p>
+    </div>
+    <div class="footer-right">
+      <h3>Ready to run the numbers on a real deal?</h3>
+      <p>Free consultation · No obligation · Same-day response</p>
+      <a class="footer-cta" href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/ask/9539cc58d5c28bd9c77d6755120798e0" target="_blank" rel="noopener">Talk to Jason → Free consultation</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Jason Kaczmarski · RE/MAX 1st Choice · jasonk@realtracs.com · (615) 587-7888</span>
+    <span>Report Date: 5/25/26</span>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ═══════════════════════════════════
+// SHARED UTILS
+// ═══════════════════════════════════
+function fmtM(el){var r=el.value.replace(/[^0-9]/g,'');if(!r){el.value='';return;}el.value=parseInt(r,10).toLocaleString();}
+function parsM(s){return parseInt((s||'').replace(/[^0-9]/g,''),10)||0;}
+function fmt(n){return'$'+Math.round(n).toLocaleString();}
+function fmtK(n){if(n>=1000000){var m=Math.round(n/10000)/100;return'$'+m.toFixed(m===Math.floor(m)?0:1)+'M';}return'$'+Math.round(n/1000)+'K';}
+function fmtP(n){return(Math.round(n*10)/10)+'%';}
+function marginClass(m){return m>=18?'strong':m>=10?'moderate':m>=0?'thin':'negative';}
+function marginLabel(m){return m>=18?'Strong (≥18%)':m>=10?'Moderate (10–17%)':m>=0?'Thin (0–9%)':'Negative — deal does not pencil';}
+function pdfStyles(){
+  return '*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;background:#fff;color:#111;padding:32px;max-width:680px;margin:0 auto;}'+
+  '.hdr{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:3px solid #C0392B;padding-bottom:14px;margin-bottom:20px;}'+
+  '.hdr-title{font-size:20px;font-weight:700;}.hdr-sub{font-size:11px;color:#888;margin-top:3px;line-height:1.6;}'+
+  '.hdr-badge{background:#C0392B;color:#fff;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:600;white-space:nowrap;}'+
+  '.margin-big{text-align:center;padding:20px;background:#f8f8f8;border-radius:8px;margin-bottom:20px;}'+
+  '.margin-lbl{font-size:12px;color:#888;margin-top:3px;}'+
+  '.sec{margin-bottom:20px;}.sec-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px;}'+
+  '.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f4f4f4;font-size:13px;}.row:last-child{border-bottom:none;}'+
+  '.row.tot{font-weight:700;font-size:14px;border-top:2px solid #eee;margin-top:4px;padding-top:10px;border-bottom:none;}'+
+  '.pos{color:#16a34a;}.neg{color:#dc2626;}'+
+  '.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}'+
+  '.metric{background:#f8f8f8;border-radius:6px;padding:12px;}.metric-val{font-size:18px;font-weight:700;}.metric-lbl{font-size:10px;color:#888;margin-top:2px;}'+
+  '.foot{font-size:10px;color:#aaa;text-align:center;margin-top:24px;border-top:1px solid #eee;padding-top:14px;line-height:1.7;}'+
+  '@media print{body{padding:16px;}}';
+}
+
+// ═══════════════════════════════════
+// TAB 1 — NEW BUILD STATE
+// ═══════════════════════════════════
+var derivedLots = 12;
+var derivedCostPerLot = 25000;
+var lastBuildCalc = {};
+var _syncing = false;
+
+function calcLots(){
+  var totalCost = parsM(document.getElementById('lot-total').value);
+  var totalAcres = parseFloat(document.getElementById('lot-acres').value)||25;
+  var acresPerPad = parseFloat(document.getElementById('acres-per-pad').value)||2;
+  document.getElementById('acp-badge').textContent = acresPerPad.toFixed(1)+' ac';
+  var lots = Math.floor(totalAcres / acresPerPad);
+  if(lots < 1) lots = 1;
+  var remainder = Math.round((totalAcres - (lots * acresPerPad)) * 10) / 10;
+  var costPerLot = lots > 0 ? Math.round(totalCost / lots) : totalCost;
+  derivedLots = lots;
+  derivedCostPerLot = costPerLot;
+  document.getElementById('bd-lots').textContent = lots;
+  document.getElementById('bd-cost-per').textContent = fmt(costPerLot);
+  document.getElementById('bd-unused').textContent = remainder.toFixed(1)+' ac';
+  var used = lots * acresPerPad;
+  document.getElementById('bd-note').textContent =
+    lots+' build pads × '+acresPerPad.toFixed(1)+' ac = '+used.toFixed(1)+' ac used. '+
+    (remainder > 0 ? remainder.toFixed(1)+' ac remainder (road access, buffers, future use). ' : '')+
+    'Land cost of '+fmt(totalCost)+' ÷ '+lots+' lots = '+fmt(costPerLot)+' per pad — flows into pro forma below.';
+  calcBuild();
+}
+
+function resaleChanged(source){
+  if(_syncing)return; _syncing=true;
+  var sqft=parseInt(document.getElementById('sqft').value)||2100;
+  if(source==='total'){
+    var t=parsM(document.getElementById('resale').value);
+    document.getElementById('resale-psf').value=sqft>0?Math.round(t/sqft).toLocaleString():'0';
+  } else {
+    var p=parsM(document.getElementById('resale-psf').value);
+    document.getElementById('resale').value=(p*sqft).toLocaleString();
+  }
+  _syncing=false;
+}
+function syncResaleOnSqftChange(){
+  if(_syncing)return; _syncing=true;
+  var sqft=parseInt(document.getElementById('sqft').value)||2100;
+  var t=parsM(document.getElementById('resale').value);
+  document.getElementById('resale-psf').value=sqft>0?Math.round(t/sqft).toLocaleString():'0';
+  _syncing=false;
+}
+
+function calcBuild(){
+  var lotPU = derivedCostPerLot;
+  var units = derivedLots;
+  var sqft=parseInt(document.getElementById('sqft').value)||2100;
+  var bpsf=parseInt(document.getElementById('bpsf').value)||175;
+  var resalePerUnit=parsM(document.getElementById('resale').value);
+  var softPerUnit=parsM(document.getElementById('softcosts').value);
+  var sellPct=parseFloat(document.getElementById('sell').value)/100;
+  document.getElementById('sqft-badge').textContent=sqft.toLocaleString()+' sf';
+  document.getElementById('bpsf-badge').textContent='$'+bpsf+'/sf';
+  document.getElementById('sell-badge').textContent=fmtP(parseFloat(document.getElementById('sell').value));
+  document.getElementById('sqft-bubble').style.display=sqft>3000?'block':'none';
+  document.getElementById('bpsf-bubble').style.display=bpsf>250?'block':'none';
+  var buildPU=sqft*bpsf, totalCostPU=lotPU+buildPU+softPerUnit;
+  var sellCPU=resalePerUnit*sellPct, profitPU=resalePerUnit-totalCostPU-sellCPU;
+  var totalRev=resalePerUnit*units, totalCost=totalCostPU*units;
+  var totalSell=sellCPU*units, totalProfit=profitPU*units;
+  var margin=resalePerUnit>0?(profitPU/resalePerUnit)*100:0;
+  var roi=totalCostPU>0?(profitPU/totalCostPU)*100:0;
+  var breakEven=totalCostPU+sellCPU;
+  var psqftSale=resalePerUnit>0?Math.round(resalePerUnit/sqft):0;
+  var totalLandCost=parsM(document.getElementById('lot-total').value);
+  var lotPct=totalRev>0?(totalLandCost/totalRev)*100:0;
+  lastBuildCalc={lotPU,sqft,bpsf,resalePerUnit,softPerUnit,sellPct,units,
+    totalRevenue:totalRev,totalCost,totalSellCost:totalSell,totalProfit,profitPerUnit:profitPU,
+    margin,roi,breakEven,buildPerUnit:buildPU,totalCostPerUnit:totalCostPU,
+    psqftSale,lotPct,sellCostPerUnit:sellCPU,totalLandCost,
+    totalAcres:parseFloat(document.getElementById('lot-acres').value)||25,
+    acresPerPad:parseFloat(document.getElementById('acres-per-pad').value)||2};
+  var mc=marginClass(margin);
+  document.getElementById('b-margin-pct').textContent=fmtP(margin);
+  document.getElementById('b-margin-pct').className='margin-pct '+mc;
+  document.getElementById('b-margin-badge').textContent=marginLabel(margin);
+  document.getElementById('b-margin-badge').className='margin-badge '+mc;
+  var med=252, diff=psqftSale-med;
+  document.getElementById('b-psqft-ctx').innerHTML=
+    '<div class="psqft-ctx-left"><strong>$'+psqftSale+'/sf</strong>Your exit $/sqft</div>'+
+    '<div class="psqft-ctx-right"><div class="vs">Unionville 2025 median: $'+med+'/sf</div>'+
+    '<div class="delta '+(diff>=0?'above':'below')+'">'+(diff>=0?'+$'+diff:'-$'+Math.abs(diff))+'/sf</div></div>';
+  document.getElementById('b-line-items').innerHTML=[
+    {l:'Gross revenue ('+units+' homes)',v:fmt(totalRev),c:''},
+    {l:'Sales costs',v:'-'+fmt(totalSell),c:'neg'},
+    {l:'Total project cost',v:'-'+fmt(totalCost),c:'neg'},
+    {l:'Net profit ('+units+' homes)',v:(totalProfit>=0?'':'-')+fmt(Math.abs(totalProfit)),c:totalProfit>=0?'pos':'neg',net:true}
+  ].map(function(r){return'<div class="li-row'+(r.net?' net':'')+'"><span class="li-label">'+r.l+'</span><span class="li-val '+r.c+'">'+r.v+'</span></div>';}).join('');
+  document.getElementById('b-key-metrics').innerHTML=
+    '<div><div class="km-label">Return on cost</div><div class="km-val">'+fmtP(roi)+'</div></div>'+
+    '<div><div class="km-label">Break-even / home</div><div class="km-val">'+fmt(breakEven)+'</div></div>'+
+    '<div><div class="km-label">Profit per home</div><div class="km-val">'+fmt(profitPU)+'</div></div>'+
+    '<div><div class="km-label">Land cost / pad</div><div class="km-val">'+fmt(lotPU)+'</div></div>';
+  document.getElementById('b-lr-pct').textContent=fmtP(lotPct);
+  var lf=document.getElementById('b-lr-fill');
+  lf.style.width=Math.min(lotPct,100)+'%';
+  lf.style.background=lotPct<=20?'#4ade80':lotPct<=30?'#fbbf24':'#f87171';
+  document.getElementById('b-lr-note').textContent=
+    'Total land cost as % of gross revenue across all '+units+' homes. '+
+    (lotPct<=20?'Within the ≤20% investor rule of thumb.':
+    lotPct<=30?'Slightly above the 20% rule — tighter margin for error.':
+    'Above 30% — most investors would want the land price lower or exit price higher.');
+}
+
+// ═══════════════════════════════════
+// TAB 2 — LAND DEV STATE
+// ═══════════════════════════════════
+var lastLandCalc = {};
+
+function calcLand(){
+  var landCost = parsM(document.getElementById('ld-land-cost').value);
+  var totalAcres = parseFloat(document.getElementById('ld-acres').value)||25;
+  var lotSize = parseFloat(document.getElementById('ld-lot-size').value)||2;
+  var hardCosts = parseInt(document.getElementById('ld-hard-costs').value)||0;
+  var softPerLot = parseInt(document.getElementById('ld-soft-costs').value)||10000;
+  var lotPrice = parsM(document.getElementById('ld-lot-price').value);
+  var sellPct = parseFloat(document.getElementById('ld-sell-pct').value)/100;
+
+  // Badges
+  document.getElementById('ld-lotsize-badge').textContent = lotSize.toFixed(2)+' ac / lot';
+  document.getElementById('ld-hard-badge').textContent = hardCosts>=1000000?'$1M':hardCosts>=1000?'$'+Math.round(hardCosts/1000)+'K':'$'+hardCosts.toLocaleString();
+  document.getElementById('ld-soft-badge').textContent = '$'+softPerLot.toLocaleString()+'/lot';
+  document.getElementById('ld-sell-badge').textContent = fmtP(parseFloat(document.getElementById('ld-sell-pct').value));
+
+  // Subdivision
+  var lots = Math.floor(totalAcres / lotSize);
+  if(lots < 1) lots = 1;
+  var remainder = Math.round((totalAcres - (lots * lotSize)) * 100) / 100;
+  var landPerLot = Math.round(landCost / lots);
+
+  document.getElementById('ld-bd-lots').textContent = lots;
+  document.getElementById('ld-bd-land-per').textContent = fmt(landPerLot);
+  document.getElementById('ld-bd-remainder').textContent = remainder.toFixed(2)+' ac';
+  var used = lots * lotSize;
+  document.getElementById('ld-bd-note').textContent =
+    lots+' lots × '+lotSize.toFixed(2)+' ac = '+used.toFixed(2)+' ac used. '+
+    (remainder > 0 ? remainder.toFixed(2)+' ac remainder (roads, buffers, easements). ' : '')+
+    'Raw land cost of '+fmt(landCost)+' ÷ '+lots+' lots = '+fmt(landPerLot)+' per lot.';
+
+  // Economics per lot
+  var hardPerLot = lots > 0 ? Math.round(hardCosts / lots) : 0;
+  var totalCostPerLot = landPerLot + hardPerLot + softPerLot;
+  var sellCostPerLot = lotPrice * sellPct;
+  var profitPerLot = lotPrice - totalCostPerLot - sellCostPerLot;
+
+  // Project totals
+  var totalRev = lotPrice * lots;
+  var totalHard = hardCosts;
+  var totalSoft = softPerLot * lots;
+  var totalLandAlloc = landCost;
+  var totalSellCost = sellCostPerLot * lots;
+  var totalProfit = profitPerLot * lots;
+  var totalCost = totalCostPerLot * lots;
+
+  var margin = lotPrice > 0 ? (profitPerLot / lotPrice) * 100 : 0;
+  var roi = totalCostPerLot > 0 ? (profitPerLot / totalCostPerLot) * 100 : 0;
+  var breakEven = totalCostPerLot + sellCostPerLot;
+  var landPct = totalRev > 0 ? (landCost / totalRev) * 100 : 0;
+
+  lastLandCalc = {landCost,totalAcres,lotSize,hardCosts,softPerLot,lotPrice,sellPct,lots,
+    landPerLot,hardPerLot,totalCostPerLot,sellCostPerLot,profitPerLot,
+    totalRev,totalHard,totalSoft,totalLandAlloc,totalSellCost,totalProfit,totalCost,
+    margin,roi,breakEven,landPct,remainder};
+
+  // Viability card
+  var mc = marginClass(margin);
+  document.getElementById('ld-margin-pct').textContent = fmtP(margin);
+  document.getElementById('ld-margin-pct').className = 'margin-pct '+mc;
+  document.getElementById('ld-margin-badge').textContent = marginLabel(margin);
+  document.getElementById('ld-margin-badge').className = 'margin-badge '+mc;
+
+  // Per-lot context vs market
+  var medLotPrice = 110000;
+  var diff = lotPrice - medLotPrice;
+  document.getElementById('ld-lot-ctx').innerHTML =
+    '<div class="psqft-ctx-left"><strong>'+fmt(lotPrice)+'/lot</strong>Your exit price</div>'+
+    '<div class="psqft-ctx-right"><div class="vs">Unionville median: $110,000/lot</div>'+
+    '<div class="delta '+(diff>=0?'above':'below')+'">'+(diff>=0?'+'+fmt(diff):'-'+fmt(Math.abs(diff)))+'</div></div>';
+
+  // Line items
+  document.getElementById('ld-line-items').innerHTML = [
+    {l:'Gross revenue ('+lots+' lots)',v:fmt(totalRev),c:''},
+    {l:'Selling costs',v:'-'+fmt(totalSellCost),c:'neg'},
+    {l:'Raw land cost',v:'-'+fmt(totalLandAlloc),c:'neg'},
+    {l:'Hard dev costs',v:'-'+fmt(totalHard),c:'neg'},
+    {l:'Soft costs',v:'-'+fmt(totalSoft),c:'neg'},
+    {l:'Net profit ('+lots+' lots)',v:(totalProfit>=0?'':'-')+fmt(Math.abs(totalProfit)),c:totalProfit>=0?'pos':'neg',net:true}
+  ].map(function(r){return'<div class="li-row'+(r.net?' net':'')+'"><span class="li-label">'+r.l+'</span><span class="li-val '+r.c+'">'+r.v+'</span></div>';}).join('');
+
+  // Key metrics
+  document.getElementById('ld-key-metrics').innerHTML =
+    '<div class="ldev-cell"><div class="ldev-cell-val">'+fmtP(roi)+'</div><div class="ldev-cell-lbl">Return on cost</div></div>'+
+    '<div class="ldev-cell"><div class="ldev-cell-val">'+fmt(breakEven)+'</div><div class="ldev-cell-lbl">Break-even / lot</div></div>'+
+    '<div class="ldev-cell"><div class="ldev-cell-val">'+fmt(profitPerLot)+'</div><div class="ldev-cell-lbl">Profit per lot</div></div>'+
+    '<div class="ldev-cell"><div class="ldev-cell-val">'+fmt(hardPerLot)+'</div><div class="ldev-cell-lbl">Hard costs / lot</div></div>';
+
+  // Land cost bar
+  document.getElementById('ld-lr-pct').textContent = fmtP(landPct);
+  var lf = document.getElementById('ld-lr-fill');
+  lf.style.width = Math.min(landPct,100)+'%';
+  lf.style.background = landPct<=20?'#4ade80':landPct<=35?'#fbbf24':'#f87171';
+  document.getElementById('ld-lr-note').textContent =
+    'Raw land cost as % of gross lot revenue. '+
+    (landPct<=20?'Land is well-positioned as a share of revenue.':
+    landPct<=35?'Moderate land ratio — development costs need to stay lean.':
+    'High land ratio — consider negotiating a lower acquisition price.');
+}
+
+// ═══════════════════════════════════
+// TAB 1 — CHART
+// ═══════════════════════════════════
+(function buildChart(){
+  var data=[
+    {x:1521,y:247,label:'Deer Point'},{x:1700,y:265,label:'Halls Mill L4'},
+    {x:1750,y:280,label:'Halls Mill L3'},{x:1750,y:280,label:'Halls Mill L2'},
+    {x:1750,y:274,label:'Halls Mill L1'},{x:2100,y:250,label:'Chapel Hill L1'},
+    {x:2050,y:256,label:'Chapel Hill L3'},{x:2500,y:228,label:'Chapel Hill L2'},
+    {x:2276,y:253,label:'Shenandoah L1'},{x:2428,y:231,label:'Shenandoah L5'},
+    {x:2339,y:252,label:'Shenandoah L2'},{x:2375,y:248,label:'Shenandoah L3'},
+    {x:2749,y:224,label:'Northside L14'}
+  ];
+  var ctx=document.getElementById('buildChart').getContext('2d');
+  new Chart(ctx,{type:'scatter',
+    data:{datasets:[
+      {label:'Closed Sale',data:data,backgroundColor:'rgba(192,57,43,.7)',borderColor:'#C0392B',pointRadius:5,pointHoverRadius:7},
+      {label:'Market Median ($252/sf)',data:[{x:1000,y:252},{x:3500,y:252}],type:'line',borderColor:'#B8860B',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{size:10,family:'DM Sans'},color:'#6b6860'}},
+        tooltip:{callbacks:{label:function(c){if(c.datasetIndex===1)return'Median: $252/sf';var d=c.raw;return d.label+' · '+d.x.toLocaleString()+' sf · $'+d.y+'/sf';}}}},
+      scales:{
+        x:{title:{display:true,text:'Sq Ft',font:{size:10},color:'#6b6860'},grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},color:'#6b6860'}},
+        y:{title:{display:true,text:'$/sqft',font:{size:10},color:'#6b6860'},grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},color:'#6b6860',callback:function(v){return'$'+v;}},min:200,max:310}
+      }}
+  });
+})();
+
+// ═══════════════════════════════════
+// TAB 1 — PDF
+// ═══════════════════════════════════
+function downloadBuildPDF(){
+  var c=lastBuildCalc; if(!c.sqft){calcLots();c=lastBuildCalc;}
+  var mc=marginClass(c.margin), mcColor=mc==='strong'?'#16a34a':mc==='moderate'?'#d97706':'#dc2626';
+  var dateStr=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>New Build Deal Summary · Unionville</title><style>'+pdfStyles()+'</style></head><body>'+
+    '<div class="hdr"><div><div class="hdr-title">New Build Deal Summary · Unionville, TN</div>'+
+    '<div class="hdr-sub">Smith Portfolio · Jason Kaczmarski · RE/MAX 1st Choice<br>(615) 587-7888 · jasonk@realtracs.com<br>Generated '+dateStr+'</div></div>'+
+    '<div class="hdr-badge">New Build Pro Forma</div></div>'+
+    '<div class="margin-big"><div style="font-size:48px;font-weight:800;color:'+mcColor+'">'+fmtP(c.margin)+'</div>'+
+    '<div style="font-size:14px;font-weight:600;color:'+mcColor+';margin-top:4px;">'+marginLabel(c.margin)+'</div>'+
+    '<div class="margin-lbl">Estimated profit margin · per home</div></div>'+
+    '<div class="sec"><div class="sec-title">Land &amp; subdivision inputs</div>'+
+    '<div class="row"><span>Total land cost</span><span>'+fmt(c.totalLandCost)+'</span></div>'+
+    '<div class="row"><span>Total acreage</span><span>'+c.totalAcres+' ac</span></div>'+
+    '<div class="row"><span>Acres per build pad</span><span>'+c.acresPerPad.toFixed(1)+' ac</span></div>'+
+    '<div class="row"><span>Buildable lots</span><span>'+c.units+' homes</span></div>'+
+    '<div class="row"><span>Land cost per pad</span><span>'+fmt(c.lotPU)+'</span></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-title">Build &amp; resale inputs · per home</div>'+
+    '<div class="row"><span>Square footage per home</span><span>'+c.sqft.toLocaleString()+' sqft</span></div>'+
+    '<div class="row"><span>Build cost per sqft</span><span>$'+c.bpsf+'/sf</span></div>'+
+    '<div class="row"><span>Soft costs per home</span><span>'+fmt(c.softPerUnit)+'</span></div>'+
+    '<div class="row"><span>Projected sale price per home</span><span>'+fmt(c.resalePerUnit)+'</span></div>'+
+    '<div class="row"><span>Sale price per sqft</span><span>$'+c.psqftSale+'/sf</span></div>'+
+    '<div class="row"><span>Market median $/sqft</span><span>$252/sf (Unionville 2025)</span></div>'+
+    '<div class="row"><span>Selling cost</span><span>'+fmtP(c.sellPct*100)+'</span></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-title">Financial summary · '+c.units+' homes</div>'+
+    '<div class="row"><span>Gross revenue</span><span>'+fmt(c.totalRevenue)+'</span></div>'+
+    '<div class="row"><span>Sales costs</span><span class="neg">−'+fmt(c.totalSellCost)+'</span></div>'+
+    '<div class="row"><span>Total project cost</span><span class="neg">−'+fmt(c.totalCost)+'</span></div>'+
+    '<div class="row tot"><span>Net profit</span><span class="'+(c.totalProfit>=0?'pos':'neg')+'">'+fmt(Math.abs(c.totalProfit))+(c.totalProfit<0?' (loss)':'')+'</span></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-title">Key metrics</div><div class="grid2">'+
+    '<div class="metric"><div class="metric-val">'+fmtP(c.roi)+'</div><div class="metric-lbl">Return on cost</div></div>'+
+    '<div class="metric"><div class="metric-val">'+fmt(c.breakEven)+'</div><div class="metric-lbl">Break-even / home</div></div>'+
+    '<div class="metric"><div class="metric-val">'+fmt(c.profitPerUnit)+'</div><div class="metric-lbl">Profit per home</div></div>'+
+    '<div class="metric"><div class="metric-val">'+fmtP(c.lotPct)+'</div><div class="metric-lbl">Land cost % of revenue</div></div>'+
+    '</div></div>'+
+    '<div class="foot">All figures are estimates — not guaranteed. Not financial, legal, tax, or investment advice.<br>Market data: Realtracs MLS · Unionville, TN · © 2026 Realtracs, Inc.<br>Jason Kaczmarski · RE/MAX 1st Choice · (615) 587-7888 · jasonk@realtracs.com</div>'+
+    '</body></html>';
+  var w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();setTimeout(function(){w.print();},600);}
+}
+
+// ═══════════════════════════════════
+// TAB 2 — PDF
+// ═══════════════════════════════════
+function downloadLandPDF(){
+  var c=lastLandCalc; if(!c.lots){calcLand();c=lastLandCalc;}
+  var mc=marginClass(c.margin), mcColor=
