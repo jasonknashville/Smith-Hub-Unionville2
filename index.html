@@ -8,6 +8,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  var panel = document.getElementById('tab-'+tab);
+  if(panel) panel.classList.add('active');
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'auto'});
+}
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -35,11 +45,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hdr-cta.outline{background:transparent;}
 
 /* TAB NAV */
-.tab-nav{background:var(--dark);border-bottom:3px solid var(--red);}
+.tab-nav{background:#111;border-bottom:3px solid var(--red);}
 .tab-nav-in{max-width:1040px;margin:0 auto;display:flex;gap:0;}
-.tab-btn{padding:14px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,.45);background:transparent;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:3px solid transparent;margin-bottom:-3px;transition:color .15s,border-color .15s;display:flex;align-items:center;gap:7px;white-space:nowrap;}
-.tab-btn:hover{color:rgba(255,255,255,.75);}
-.tab-btn.active{color:#fff;border-bottom-color:var(--red);}
+.tab-btn{padding:14px 22px;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);background:transparent;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:3px solid transparent;margin-bottom:-3px;transition:color .15s,border-color .15s,background .15s;display:flex;align-items:center;gap:7px;white-space:nowrap;letter-spacing:.01em;}
+.tab-btn:hover{color:#fff;background:rgba(255,255,255,.06);}
+.tab-btn.active{color:#fff;border-bottom-color:#e8c97e;background:rgba(255,255,255,.04);}
 .tab-btn .tab-icon{font-size:15px;}
 
 /* HERO */
@@ -649,17 +659,6 @@ input[type=range]{width:100%;accent-color:var(--red);cursor:pointer;}
 </footer>
 
 <script>
-// ═══════════════════════════════════
-// TAB SWITCHING
-// ═══════════════════════════════════
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('tab-'+tab).classList.add('active');
-  btn.classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
 // ═══════════════════════════════════
 // SHARED UTILS
 // ═══════════════════════════════════
